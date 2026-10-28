@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><style>html,body{margin:0;background:#000}</style>
+<script type="importmap">{"imports":{"three":"/three/three.module.min.js"}}</script>
+</head>
+<body>
+<script type="module">
+// Synthetic photogrammetry test scene. All units are METRES.
+// The scene is deliberately simple and fully known so that reconstruction
+// and measurement accuracy can be checked against ground truth.
+import * as THREE from 'three';
+
+function rng(seed) { return () => (seed = (seed * 16807) % 2147483647) / 2147483647; }
+
+// Rich, non-repeating texture: SIFT needs texture to find correspondences.
+function textureCanvas(seed, size, base) {
+  const r = rng(seed);
+  const c = document.createElement('canvas'); c.width = c.height = size;
+  const g = c.getContext('2d');
+  g.fillStyle = base; g.fillRect(0, 0, size, size);
+  for (let i = 0; i < 2600; i++) {
+    const h = Math.floor(r() * 360), s = 40 + r() * 60, l = 20 + r() * 65;
+    g.fillStyle = `hsl(${h},${s}%,${l}%)`;
+    const x = r() * size, y = r() * size, w = 3 + r() * size / 14;
+    if (r() < 0.5) { g.beginPath(); g.arc(x, y, w / 2, 0, Math.PI * 2); g.fill(); }
+    else { g.save(); g.translate(x, y); g.rotate(r() * 3.14); g.fillRect(-w / 2, -w / 4, w, w / 2); g.restore(); }
+  }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
+  return t;
+}
+
+window.buildScene = async (spec) => {
+  const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+  renderer.setSize(spec.width, spec.height, false);
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  document.body.appendChild(renderer.domElement);
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x8a8f96);
+  scene.add(new THREE.AmbientLight(0xffffff, 1.4));
+  const sun = new THREE.DirectionalLight(0xffffff, 1.6); sun.position.set(0.4, 1.0, 0.3); scene.add(sun);
+
+  // Ground: textured table top (y = 0 is the supporting plane).
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(spec.ground, spec.ground),
+    new THREE.MeshStandardMaterial({ map: textureCanvas(7, 2048, '#c9b48f'), roughness: 0.9 }));
+  ground.rotation.x = -Math.PI / 2; scene.add(ground);
+
+  // Object: textured box with known dimensions.
+  const [L, W, H] = spec.box;
+  const mats = [11, 12, 13, 14, 15, 16].map(s => new THREE.MeshStandardMaterial({ map: textureCanvas(s, 1024, '#3060a0'), roughness: 0.8 }));
+  const box = new THREE.Mesh(new THREE.BoxGeometry(L, H, W), mats);
+  box.position.set(0, H / 2, 0); box.rotation.y = spec.boxYaw; scene.add(box);
+
+  // ArUco marker (with white quiet zone) lying flat on the ground.
+  const img = new Image(); img.src = spec.markerDataUrl; await img.decode();
+  const mt = new THREE.Texture(img); mt.needsUpdate = true; mt.colorSpace = THREE.SRGBColorSpace;
+  mt.magFilter = THREE.NearestFilter;
+  const quiet = spec.markerSize * spec.markerImageScale;   // full printed square incl. border
+  const marker = new THREE.Mesh(new THREE.PlaneGeometry(quiet, quiet), new THREE.MeshBasicMaterial({ map: mt }));
+  marker.rotation.x = -Math.PI / 2; marker.position.set(...spec.markerPos); scene.add(marker);
+
+  const cam = new THREE.PerspectiveCamera(spec.fovY, spec.width / spec.height, 0.01, 10);
+  window.renderView = (pos, target) => {
+    cam.position.set(...pos); cam.lookAt(new THREE.Vector3(...target)); cam.updateMatrixWorld();
+    renderer.render(scene, cam);
+    return renderer.domElement.toDataURL('image/jpeg', 0.93);
+  };
+  return true;
+};
+window.sceneReady = true;
+</script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: backend/requirements*.txt
+      - name: System libraries for Open3D
+        run: sudo apt-get update && sudo apt-get install -y libegl1 libgl1 libgomp1
+      - run: pip install -r requirements-dev.txt
+      - name: Unit and API tests
+        run: python -m pytest -q
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Render synthetic dataset (known ground truth)
+        run: |
+          cd tools/synthetic && npm ci && npx playwright install --with-deps chromium
+          python ../make_marker.py --size-mm 50 --plain --dpi 150 --out /tmp/marker.png
+          node render.js --marker /tmp/marker.png --out /tmp/synthetic
+      - name: End-to-end reconstruction accuracy test
+        env:
+          SCAN3D_E2E_DATASET: /tmp/synthetic
+        run: python -m pytest -q -s tests/test_e2e_synthetic.py
+
+  backend-docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build server image
+        run: docker build -t scan3d-backend backend
+      - name: Smoke test
+        run: |
+          docker run -d --name scan3d -p 8000:8000 scan3d-backend
+          for i in $(seq 1 30); do curl -fs http://127.0.0.1:8000/api/v1/health && break; sleep 2; done
+          curl -fs http://127.0.0.1:8000/api/v1/health
+
+  android:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: android
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Core module unit tests (pure Kotlin)
+        run: ./gradlew -p core test --console=plain
+      - name: Build debug APK
+        run: ./gradlew :app:assembleDebug --console=plain
+      - uses: actions/upload-artifact@v4
+        with:
+          name: scan3d-ai-debug-apk
+          path: android/app/build/outputs/apk/debug/*.apk

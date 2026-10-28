@@ -1,0 +1,9 @@
+# Reconstruction API. Tested with Python 3.13 on x86_64 Linux.
+fastapi>=0.115
+uvicorn[standard]>=0.30
+pydantic==2.*
+pycolmap==4.2.*                    # COLMAP SfM (BSD-3). CPU wheels from PyPI; CUDA needs a source build
+opencv-contrib-python-headless==5.0.*   # ArUco, SGBM stereo, ximgproc (Apache-2.0)
+open3d==0.20.*                     # plane fitting, clustering, Poisson meshing (MIT)
+trimesh>=4                         # GLB/OBJ/PLY/STL export (MIT)
+numpy>=2,<3

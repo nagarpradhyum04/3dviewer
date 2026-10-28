@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+backend/data/
+.pytest_cache/
+
+# Node
+node_modules/
+
+# Android / Gradle
+.gradle/
+build/
+local.properties
+*.iml
+.idea/
+captures/
+.kotlin/
+
+# OS
+.DS_Store

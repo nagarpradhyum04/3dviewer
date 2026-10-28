@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- Only exported model files and photos are shared, never the whole app directory. -->
+    <files-path name="scans" path="scans/" />
+    <cache-path name="share" path="share/" />
+</paths>

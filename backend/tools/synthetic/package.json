@@ -1,0 +1,14 @@
+{
+  "name": "scan3d-synthetic-dataset",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Renders multi-view photos of a known-size object for reconstruction accuracy tests",
+  "scripts": {
+    "render": "node render.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "three": "0.169.0",
+    "playwright": "1.63.0"
+  }
+}

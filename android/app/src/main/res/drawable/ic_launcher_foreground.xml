@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Isometric cube with scan brackets. 108dp adaptive-icon canvas, safe zone 66dp. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <path android:fillColor="#4F8BFF" android:pathData="M54,33 L72,43 L54,53 L36,43 Z" />
+    <path android:fillColor="#1E6BFF" android:pathData="M36,43 L54,53 L54,75 L36,65 Z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M54,53 L72,43 L72,65 L54,75 Z" />
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="3" android:strokeLineCap="round"
+        android:pathData="M28,36 L28,28 L36,28 M80,36 L80,28 L72,28 M28,72 L28,80 L36,80 M80,72 L80,80 L72,80" />
+</vector>
