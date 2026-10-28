@@ -3,7 +3,7 @@
 FROM python:3.13-slim
 
 RUN apt-get update \
- && apt-get install -y --no-install-recommends libegl1 libgl1 libgomp1 libglib2.0-0 libx11-6 libusb-1.0-0 libudev1 \
+ && apt-get install -y --no-install-recommends libegl1 libgl1 libgomp1 libglib2.0-0 libx11-6 libusb-1.0-0 libudev1 libidn2-0 \
  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /srv
