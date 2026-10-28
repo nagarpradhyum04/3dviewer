@@ -2,8 +2,7 @@
 
 ## Not done yet (in priority order)
 
-1. **Run the app on physical Android devices.** The UI module was written without being compiled
-   in the development sandbox (Google Maven was unreachable). CI compiles it. CameraX capture, the
+1. **Run the app on physical Android devices.** The APK compiles in CI, but CameraX capture, the
    sensor-based coverage ring, the WebView bridge, sharing and Save-as still need testing on 2–3
    phones (one older, low-RAM device).
 2. **Real-object accuracy study** (Phase 7): follow the protocol in [ACCURACY.md](ACCURACY.md).

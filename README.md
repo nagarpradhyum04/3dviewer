@@ -21,7 +21,7 @@ reference, dimensions are shown as proportions only.
 | Job API: resumable upload, queue, honest progress + ETA, cancel, delete, re-calibrate, download | ✅ Implemented | pytest + live HTTP runs |
 | App core logic: API client, upload/resume/poll/download, photo-quality metrics, coverage guidance, scan library, units | ✅ Implemented | 19 JVM unit tests, plus an integration test that drove the **real server** through all 8 stages |
 | 3D viewer (three.js in WebView, offline): load GLB/PLY, orbit/zoom/pan, reset, wireframe, tap-to-measure, snapshot thumbnail, error states | ✅ Implemented | Headless Chromium test with a reconstructed model (`android/tools/viewer-test.js`) |
-| Android UI: splash, home, new scan, camera capture, photo review, processing, viewer, library, settings, help | ✅ Written, ⚠️ **not compiled or run in the development sandbox** | Google's Maven repository (AGP, AndroidX, CameraX) was blocked there. CI (`.github/workflows/ci.yml`) builds the APK. No physical-device test yet |
+| Android UI: splash, home, new scan, camera capture, photo review, processing, viewer, library, settings, help | ✅ Implemented, compiles; ⚠️ **not yet run on a device** | CI builds the debug APK (artifact `scan3d-ai-debug-apk`). Camera, sensors, WebView bridge and sharing have not been exercised on hardware |
 | Metric dimensions via printed ArUco marker | ✅ Implemented | Synthetic test only. Real-object validation still to be done (Phase 7 protocol below) |
 | Manual calibration (two picked points + known distance) | ✅ Implemented | Server rescale tested over HTTP |
 | GPU dense reconstruction (COLMAP PatchMatch, CUDA) | ⚠️ Implemented, **untested** | No GPU was available |
@@ -114,7 +114,7 @@ Playwright for the synthetic test-data renderer and the headless viewer test. Do
 
 | Phase | Content | State |
 |---|---|---|
-| 1 | App structure, navigation, camera permission, real photo capture | Code complete; CI compile; **device test pending** |
+| 1 | App structure, navigation, camera permission, real photo capture | Code complete, APK builds in CI; **device test pending** |
 | 2 | Photo validation (phone + server), guided multi-angle capture, coverage warnings | Done (core logic unit-tested) |
 | 3 | Real reconstruction pipeline + job API | Done, tested end-to-end |
 | 4 | Model loading + interactive viewer | Done, tested headless with a real reconstruction |
