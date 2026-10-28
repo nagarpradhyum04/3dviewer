@@ -210,16 +210,16 @@ fun AppLogo(modifier: Modifier = Modifier, size: Dp = 64.dp) {
     androidx.compose.foundation.Canvas(modifier.size(size)) {
         val s = this.size.minDimension / 108f
         fun p(x: Float, y: Float) = androidx.compose.ui.geometry.Offset(x * s, y * s)
-        fun poly(color: Color, vararg pts: androidx.compose.ui.geometry.Offset) {
+        fun poly(color: Color, pts: List<androidx.compose.ui.geometry.Offset>) {
             val path = androidx.compose.ui.graphics.Path().apply {
                 moveTo(pts[0].x, pts[0].y); pts.drop(1).forEach { lineTo(it.x, it.y) }; close()
             }
             drawPath(path, color)
         }
         drawRoundRect(ai.scan3d.app.ui.theme.Navy, cornerRadius = androidx.compose.ui.geometry.CornerRadius(24 * s))
-        poly(light, p(54f, 33f), p(72f, 43f), p(54f, 53f), p(36f, 43f))
-        poly(blue, p(36f, 43f), p(54f, 53f), p(54f, 75f), p(36f, 65f))
-        poly(Color.White, p(54f, 53f), p(72f, 43f), p(72f, 65f), p(54f, 75f))
+        poly(light, listOf(p(54f, 33f), p(72f, 43f), p(54f, 53f), p(36f, 43f)))
+        poly(blue, listOf(p(36f, 43f), p(54f, 53f), p(54f, 75f), p(36f, 65f)))
+        poly(Color.White, listOf(p(54f, 53f), p(72f, 43f), p(72f, 65f), p(54f, 75f)))
         val stroke = androidx.compose.ui.graphics.drawscope.Stroke(width = 3 * s, cap = androidx.compose.ui.graphics.StrokeCap.Round)
         listOf(
             listOf(p(28f, 36f), p(28f, 28f), p(36f, 28f)), listOf(p(80f, 36f), p(80f, 28f), p(72f, 28f)),

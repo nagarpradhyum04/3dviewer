@@ -47,6 +47,9 @@ jobs:
           docker run -d --name scan3d -p 8000:8000 scan3d-backend
           for i in $(seq 1 30); do curl -fs http://127.0.0.1:8000/api/v1/health && break; sleep 2; done
           curl -fs http://127.0.0.1:8000/api/v1/health
+      - name: Container logs
+        if: failure()
+        run: docker logs scan3d
 
   android:
     runs-on: ubuntu-latest
